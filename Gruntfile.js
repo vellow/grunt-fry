@@ -246,6 +246,7 @@ grunt.event.on('watch', function(action, filepath, target) {
     filename = filepath.replace(sysConf.src_less + '/', '');
     var isRootFile = path.dirname(filename) === '.';
     if( isRootFile ) {
+      grunt.config.set('watch.less.tasks', 'less:main');
       grunt.config(['less', 'main', 'files'], [{
               expand: true,
               cwd: '<%= sysConf.src_less %>',
@@ -256,6 +257,7 @@ grunt.event.on('watch', function(action, filepath, target) {
         }]);
 
     } else {
+      grunt.config.set('watch.less.tasks', 'less:sub');
       var dirname = path.dirname(filename);
       grunt.config(['less', 'sub', 'files'], [{
                 src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
