@@ -89,7 +89,19 @@ module.exports = function(grunt) {
 
     //  concat folder 'src/css/a'::{'a1.css', 'a2.css'} ==>> 'src/output.css'
     concat: {
-      js: {
+      js_main: {
+        options: {
+          separator: '\n;'
+        },
+        files: [{
+          expand: true,
+          cwd: '<%= sysConf.src_js %>',
+          src: ['*.js'],
+          dest: '<%= sysConf.dist_js %>/',
+          filter: 'isFile'
+        }],
+      },
+      js_sub: {
         options: {
           separator: '\n;'
         },
@@ -100,9 +112,24 @@ module.exports = function(grunt) {
             arr.push( {dest: '<%= sysConf.dist_js %>/' + item + '.js', src: ['<%= sysConf.src_js %>/' + item + '/*.js']} );
           });
           return arr
-        })(),
+          })(),          
       },
-      css: {
+
+      // css main
+      css_main: {
+        options: {
+          separator: '\n'
+        },
+        files: [{
+          expand: true,
+          cwd: '<%= sysConf.src_css %>',
+          src: ['*.css'],
+          dest: '<%= sysConf.dist_css %>/',
+          filter: 'isFile'
+        }],      
+      }, 
+      // css sub
+      css_sub: {
         options: {
           separator: '\n'
         },
@@ -214,17 +241,34 @@ module.exports = function(grunt) {
     },
     // watch less, js
     watch: {
-      scripts: {
-        files: ['<%= sysConf.src_js %>/**/*.js'],
-        tasks: ['newer:jshint', 'newer:copy:js', 'newer:concat:js', 'newer:uglify'],
+
+      // watch javascript
+      scripts_main: {
+        files: ['<%= sysConf.src_js %>/*.js'],
+        tasks: ['newer:concat:js_main', 'newer:uglify'],
         options: {
           spawn: false,
-          livereload: true,
+          // livereload: true,
         },
       },
-      css: {
-        files: ['<%= sysConf.src_css %>/**/*.css'],
-        tasks: ['newer:copy:css', 'newer:concat:css'],
+      scripts_sub: {
+        files: ['<%= sysConf.src_js %>/**/*.js', '!<%= sysConf.src_js %>/*.js'],
+        tasks: ['newer:concat:js_sub', 'newer:uglify'],
+        options: {
+          spawn: false,
+        },
+      },
+      // watch css
+      css_main: {
+        files: ['<%= sysConf.src_css %>/*.css'],
+        tasks: ['newer:concat:css_main'],
+        options: {
+          spawn: false,
+        },
+      },
+      css_sub: {
+        files: ['<%= sysConf.src_css %>/**/*.css', '!<%= sysConf.src_css %>/*.css'],
+        tasks: ['newer:concat:css_sub'],
         options: {
           spawn: false,
         },
@@ -237,7 +281,96 @@ module.exports = function(grunt) {
         },
       },       
     },  
-});
+  });
+
+  // grunt.event.on('watch', function(action, filepath, target) {
+  //   grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
+
+  //   /* watch less */
+  //   if(target === 'less'){
+  //     // {{sysConf.src_less}}/a/footer.css ==>> a/footer.css
+  //     // filename = filepath.replace(sysConf.src_less + '/', '');
+  //     // var isRootFile = path.dirname(filename) === '.';
+  //     // if( isRootFile ) {
+  //     //   grunt.config.set('watch.less.tasks', 'less:main');
+  //     //   grunt.config(['less', 'main', 'files'], [{
+  //     //           expand: true,
+  //     //           cwd: '<%= sysConf.src_less %>',
+  //     //           src: [filename],
+  //     //           dest: '<%= sysConf.dist_css %>',
+  //     //           ext: '.less.css',
+  //     //           filter: 'isFile'
+  //     //     }]);
+
+  //     // } else {
+  //     //   grunt.config.set('watch.less.tasks', 'less:sub');
+  //     //   var dirname = path.dirname(filename);
+  //     //   grunt.config(['less', 'sub', 'files'], [{
+  //     //             src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
+  //     //             dest: '<%= sysConf.dist_css %>/' + dirname + '.less.css',
+  //     //       }]);
+  //     // }
+
+  //   /* watch javascripts */    
+  //   } else if (target === 'scripts') {
+  //     // jshint
+  //     grunt.config(['jshint', 'all'], {
+  //             src: [filepath],   
+  //       });
+  //     // copy src/js/*.js to dist/
+  //     filename = filepath.replace(sysConf.src_js + '/', '');
+  //     var isRootFile = path.dirname(filename) === '.';
+  //     if( isRootFile ){
+  //       // do copy
+  //       grunt.config(['copy', 'js', 'files'], [{
+  //               expand: true,
+  //               cwd: '<%= sysConf.src_js %>',
+  //               src: [filename],
+  //               dest: '<%= sysConf.dist_js %>',
+  //               filter: 'isFile'      
+  //         }]);
+  //       // don't concat
+  //       grunt.config(['concat', 'js', 'files'],[{}]);
+
+  //     } else {
+  //       // don't copy
+  //       grunt.config(['copy', 'js', 'files'], [{}]);
+  //       // do concat
+  //       dirname = path.dirname(filename);
+  //       grunt.config(['concat', 'js', 'files'],[{
+  //               src: ['<%= sysConf.src_js %>/' + dirname +'/*.js'],
+  //               dest: '<%= sysConf.dist_js %>/' + dirname +'.js',         
+  //       }]);
+  //     }
+
+  //   // watch css
+  //   } else if (target === 'css') {
+  //     filename = filepath.replace(sysConf.src_css + '/', '');
+  //     var isRootFile = path.dirname(filename) === '.';
+  //     if( isRootFile ){
+  //       // do copy
+  //       grunt.config(['copy', 'css', 'files'], [{
+  //               expand: true,
+  //               cwd: '<%= sysConf.src_css %>',
+  //               src: [filename],
+  //               dest: '<%= sysConf.dist_css %>',
+  //               filter: 'isFile'      
+  //         }]);
+  //       // don't concat
+  //       grunt.config(['concat', 'css', 'files'],[{}]);
+
+  //     } else {
+  //       // don't copy
+  //       grunt.config(['copy', 'css', 'files'], [{}]);
+  //       // do concat
+  //       dirname = path.dirname(filename);
+  //       grunt.config(['concat', 'css', 'files'],[{
+  //               src: ['<%= sysConf.src_css %>/' + dirname +'/*.css'],
+  //               dest: '<%= sysConf.dist_css %>/' + dirname +'.css',         
+  //       }]);
+  //     }   
+  //   };
+  // });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');

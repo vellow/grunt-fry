@@ -1,4 +1,6 @@
 
+
+
 ;(function($,window){
 	window.addTags = function(opt){
 		var self = this;
