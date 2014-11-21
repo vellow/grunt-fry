@@ -16,7 +16,7 @@ var sysConf = {
       dist_css: 'dist/css',
       dist_img: 'dist/img',
       dist_js: 'dist/js',
-      src_dir: 'dist',
+      src_dir: 'src',
       src_css: 'src/css',
       src_img: 'src/img',
       src_less: 'src/less',
@@ -34,6 +34,7 @@ module.exports = function(grunt) {
       main: {
         options: {
           banner: '/*uglify*/',
+          sourceMap: true,
           compress:{
             sequences     : true,  // join consecutive statemets with the “comma operator”
             properties    : true,  // optimize property access: a["foo"] → a.foo
@@ -215,119 +216,28 @@ module.exports = function(grunt) {
     watch: {
       scripts: {
         files: ['<%= sysConf.src_js %>/**/*.js'],
-        tasks: ['jshint', 'copy:js', 'concat:js'],
+        tasks: ['newer:jshint', 'newer:copy:js', 'newer:concat:js', 'newer:uglify'],
         options: {
           spawn: false,
+          livereload: true,
         },
       },
       css: {
         files: ['<%= sysConf.src_css %>/**/*.css'],
-        tasks: ['copy:css', 'concat:css'],
+        tasks: ['newer:copy:css', 'newer:concat:css'],
         options: {
           spawn: false,
         },
       },
       less: {
         files: ['<%= sysConf.src_less %>/**/*.less'],
-        tasks: ['less'],
+        tasks: ['newer:less'],
         options: {
           spawn: false,
         },
       },       
     },  
 });
-
-grunt.event.on('watch', function(action, filepath, target) {
-  grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
-
-  /* watch less */
-  if(target === 'less'){
-    // {{sysConf.src_less}}/a/footer.css ==>> a/footer.css
-    filename = filepath.replace(sysConf.src_less + '/', '');
-    var isRootFile = path.dirname(filename) === '.';
-    if( isRootFile ) {
-      grunt.config.set('watch.less.tasks', 'less:main');
-      grunt.config(['less', 'main', 'files'], [{
-              expand: true,
-              cwd: '<%= sysConf.src_less %>',
-              src: [filename],
-              dest: '<%= sysConf.dist_css %>',
-              ext: '.less.css',
-              filter: 'isFile'
-        }]);
-
-    } else {
-      grunt.config.set('watch.less.tasks', 'less:sub');
-      var dirname = path.dirname(filename);
-      grunt.config(['less', 'sub', 'files'], [{
-                src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
-                dest: '<%= sysConf.dist_css %>/' + dirname + '.less.css',
-          }]);
-    }
-
-  /* watch javascripts */    
-  } else if (target === 'scripts') {
-    // jshint
-    // grunt.config(['jshint', 'all'], {
-    //         src: [filepath],   
-    //   });
-    // copy src/js/*.js to dist/
-    filename = filepath.replace(sysConf.src_js + '/', '');
-    var isRootFile = path.dirname(filename) === '.';
-    if( isRootFile ){
-      // do copy
-      grunt.config(['copy', 'js', 'files'], [{
-              expand: true,
-              cwd: '<%= sysConf.src_js %>',
-              src: [filename],
-              dest: '<%= sysConf.dist_js %>',
-              filter: 'isFile'      
-        }]);
-      // don't concat
-      grunt.config(['concat', 'js', 'files'],[{}]);
-
-    } else {
-      // don't copy
-      grunt.config(['copy', 'js', 'files'], [{}]);
-      // do concat
-      dirname = path.dirname(filename);
-      grunt.config(['concat', 'js', 'files'],[{
-              src: ['<%= sysConf.src_js %>/' + dirname +'/*.js'],
-              dest: '<%= sysConf.dist_js %>/' + dirname +'.js',         
-      }]);
-    }
-
-  // watch css
-  } else if (target === 'css') {
-    filename = filepath.replace(sysConf.src_css + '/', '');
-    var isRootFile = path.dirname(filename) === '.';
-    if( isRootFile ){
-      // do copy
-      grunt.config(['copy', 'css', 'files'], [{
-              expand: true,
-              cwd: '<%= sysConf.src_css %>',
-              src: [filename],
-              dest: '<%= sysConf.dist_css %>',
-              filter: 'isFile'      
-        }]);
-      // don't concat
-      grunt.config(['concat', 'css', 'files'],[{}]);
-
-    } else {
-      // don't copy
-      grunt.config(['copy', 'css', 'files'], [{}]);
-      // do concat
-      dirname = path.dirname(filename);
-      grunt.config(['concat', 'css', 'files'],[{
-              src: ['<%= sysConf.src_css %>/' + dirname +'/*.css'],
-              dest: '<%= sysConf.dist_css %>/' + dirname +'.css',         
-      }]);
-    }   
-  }
-
-
-});
-
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -338,10 +248,12 @@ grunt.event.on('watch', function(action, filepath, target) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
+  grunt.loadNpmTasks('grunt-newer');
 
   // Default task(s).
   grunt.registerTask('default', ['concat']);
   grunt.registerTask('run', ['clean', 'copy', 'concat', 'less', 'uglify']);
   grunt.registerTask('dev', ['clean', 'less', 'uglify', 'watch']);
+  grunt.registerTask('nless', ['new:less']);
 
 };

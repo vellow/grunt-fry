@@ -7,6 +7,6 @@ var foo = 'bar';
 
 if (1 === 1) {
 
-    foo =  'foo';
+    foo =  'fo';
 }
 

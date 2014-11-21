@@ -1,5 +1,4 @@
 
-
 ;(function($){
 
 	var textSelect = function(obj,start,end){
