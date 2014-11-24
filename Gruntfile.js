@@ -9,19 +9,8 @@
 var grunt = require('grunt'),
     _ = grunt.util._,
     path = require('path'),
-    dig = require('./lib/digger.js');
-
-var sysConf = {
-      dist_dir: 'dist',
-      dist_css: 'dist/css',
-      dist_img: 'dist/img',
-      dist_js: 'dist/js',
-      src_dir: 'src',
-      src_css: 'src/css',
-      src_img: 'src/img',
-      src_less: 'src/less',
-      src_js: 'src/js',
-    };
+    dig = require('./lib/digger.js'),
+    sysConf = require('./config/files.js');
 
 module.exports = function(grunt) {
   // Project configuration.
@@ -44,7 +33,7 @@ module.exports = function(grunt) {
 
       },
       main: {
-        src: ['<%= sysConf.src_js %>/**/*.js']
+        src: ['<%= sysConf.js.src %>/**/*.js']
       },
     },
 
@@ -79,15 +68,15 @@ module.exports = function(grunt) {
         files: (function(){
           var arr = [{
           expand: true,
-          cwd: '<%= sysConf.src_js %>',
+          cwd: '<%= sysConf.js.src %>',
           src: '*.js',
-          dest: '<%= sysConf.dist_js %>',
+          dest: '<%= sysConf.js.dest %>',
           ext: '.min.js',
           filter: 'isFile'
         }];
-        var fileList = dig( sysConf.src_js );
+        var fileList = dig( sysConf.js.src );
         _.each(fileList.dirs, function(item){
-          arr.push( {dest: '<%= sysConf.dist_js %>/' + item + '.min.js', src: ['<%= sysConf.src_js %>/' + item + '/*.js']} );
+          arr.push( {dest: '<%= sysConf.js.dest %>/' + item + '.min.js', src: ['<%= sysConf.js.src %>/' + item + '/*.js']} );
         });
         return arr      
         })(),
@@ -103,15 +92,15 @@ module.exports = function(grunt) {
         files: (function(){
           var arr = [{
             expand: true,
-            cwd: '<%= sysConf.src_less %>',
+            cwd: '<%= sysConf.less.src %>',
             src: ['*.less'],
-            dest: '<%= sysConf.dist_css %>/',
+            dest: '<%= sysConf.less.dest %>/',
             ext: '.less.css',
             filter: 'isFile'
           }];
-          var fileList = dig( sysConf.src_less );
+          var fileList = dig( sysConf.less.src );
           _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.less.min.css', src: ['<%= sysConf.src_less %>/' + item + '/*.less']} );
+            arr.push( {dest: '<%= sysConf.css.dest %>/' + item + '.less.min.css', src: ['<%= sysConf.less.src %>/' + item + '/*.less']} );
           });
           return arr
         })(),
@@ -123,15 +112,15 @@ module.exports = function(grunt) {
         files: (function(){
           var arr = [{
             expand: true,
-            cwd: '<%= sysConf.src_css %>',
+            cwd: '<%= sysConf.css.src %>',
             src: ['*.css'],
-            dest: '<%= sysConf.dist_css %>',
+            dest: '<%= sysConf.css.dest %>',
             ext: '.min.css',
             filter: 'isFile'
           }];
-          var fileList = dig( sysConf.src_less );
+          var fileList = dig( sysConf.less.src );
           _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.min.css', src: ['<%= sysConf.src_css %>/' + item + '/*.css']} );
+            arr.push( {dest: '<%= sysConf.css.dest %>/' + item + '.min.css', src: ['<%= sysConf.css.src %>/' + item + '/*.css']} );
           });
           return arr
         })(),
@@ -147,16 +136,16 @@ module.exports = function(grunt) {
       main: {                         
         files: [{
           expand: true,                  // Enable dynamic expansion
-          cwd: '<%= sysConf.src_img %>',                   // Src matches are relative to this path
+          cwd: '<%= sysConf.img.src %>',                   // Src matches are relative to this path
           src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
-          dest: '<%= sysConf.dist_img %>'                  // Destination path prefix
+          dest: '<%= sysConf.img.dest %>'                  // Destination path prefix
         }]
       }
     },
 
     // clean dist/* 
     clean: {
-      dist: ['<%= sysConf.dist_dir %>/*']
+      dist: ['<%= sysConf.root.dest %>/*']
     },
 
 
@@ -168,9 +157,9 @@ module.exports = function(grunt) {
         },
         files: (function(){
           var arr = [];
-          var fileList = dig( sysConf.src_js );
+          var fileList = dig( sysConf.js.src );
           _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= sysConf.dist_js %>/' + item + '.js', src: ['<%= sysConf.src_js %>/' + item + '/*.js']} );
+            arr.push( {dest: '<%= sysConf.js.dest %>/' + item + '.js', src: ['<%= sysConf.js.src %>/' + item + '/*.js']} );
           });
           return arr
           })(),          
@@ -183,9 +172,9 @@ module.exports = function(grunt) {
         },
         files: (function(){
           var arr = [];
-          var fileList = dig( sysConf.src_css );
+          var fileList = dig( sysConf.css.src );
           _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.css', src: ['<%= sysConf.src_css %>/' + item + '/*.css']} );
+            arr.push( {dest: '<%= sysConf.css.dest %>/' + item + '.css', src: ['<%= sysConf.css.src %>/' + item + '/*.css']} );
           });
           return arr
         })(),      
@@ -198,9 +187,9 @@ module.exports = function(grunt) {
           // copy src/css/*.css ==> dist/css/
           {
             expand: true,
-            cwd: '<%= sysConf.src_css %>',
+            cwd: '<%= sysConf.css.src %>',
             src: ['*.css'],
-            dest: '<%= sysConf.dist_css %>/',
+            dest: '<%= sysConf.css.dest %>/',
             filter: 'isFile'
           }
         ],
@@ -210,9 +199,9 @@ module.exports = function(grunt) {
           // copy src/js/*.js ==> dist/js/
           {
             expand: true,
-            cwd: '<%= sysConf.src_js %>',
+            cwd: '<%= sysConf.js.src %>',
             src: ['*.js'],
-            dest: '<%= sysConf.dist_js %>/',
+            dest: '<%= sysConf.js.dest %>/',
             filter: 'isFile'
           }
         ],
@@ -222,9 +211,9 @@ module.exports = function(grunt) {
           // copy src/img/* ==> dist/img/
           {
             expand: true,
-            cwd: '<%= sysConf.src_img %>',
+            cwd: '<%= sysConf.img.src %>',
             src: ['*'],
-            dest: '<%= sysConf.dist_img %>/',
+            dest: '<%= sysConf.img.dest %>/',
             filter: 'isFile'
           },
 
@@ -235,7 +224,7 @@ module.exports = function(grunt) {
     watch: {
       // watch javascript
       scripts: {
-        files: ['<%= sysConf.src_js %>/**/*.js'],
+        files: ['<%= sysConf.js.src %>/**/*.js'],
         tasks: ['jshint', 'uglify'],
         options: {
           spawn: false,
@@ -244,7 +233,7 @@ module.exports = function(grunt) {
       },
       // watch css
       css: {
-        files: ['<%= sysConf.src_css %>/**/*.css'],
+        files: ['<%= sysConf.css.src %>/**/*.css'],
         tasks: ['cssmin'],
         options: {
           spawn: false,
@@ -252,7 +241,7 @@ module.exports = function(grunt) {
         },
       },
       less: {
-        files: ['<%= sysConf.src_less %>/**/*.less'],
+        files: ['<%= sysConf.less.src %>/**/*.less'],
         tasks: ['less'],
         options: {
           spawn: false,
@@ -260,7 +249,7 @@ module.exports = function(grunt) {
         },
       },
       images: {
-        files: ['<%= sysConf.src_img %>/**/*'],
+        files: ['<%= sysConf.img.src %>/**/*'],
         tasks: ['imagemin'],
         options: {
           spawn: false,
@@ -275,24 +264,24 @@ module.exports = function(grunt) {
 
     /* watch less */
     if(target === 'less'){
-      // {{sysConf.src_less}}/a/footer.css ==>> a/footer.css
-      var filename = filepath.replace(sysConf.src_less + '/', '');
+      // {{sysConf.less.src}}/a/footer.css ==>> a/footer.css
+      var filename = filepath.replace(sysConf.less.src + '/', '');
       var isRootFile = path.dirname(filename) === '.';
       var conf;
       if( isRootFile ) {
         conf = [{
                 expand: true,
-                cwd: '<%= sysConf.src_less %>',
+                cwd: '<%= sysConf.less.src %>',
                 src: [filename],
-                dest: '<%= sysConf.dist_css %>',
+                dest: '<%= sysConf.css.dest %>',
                 ext: '.less.min.css',
                 filter: 'isFile'
           }];
       } else {
         var dirname = path.dirname(filename);
         conf = [{
-                  src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
-                  dest: '<%= sysConf.dist_css %>/' + dirname + '.less.min.css',
+                  src: '<%= sysConf.less.src %>/' + dirname + '/*.less',
+                  dest: '<%= sysConf.css.dest %>/' + dirname + '.less.min.css',
             }];
       }
 
@@ -304,58 +293,58 @@ module.exports = function(grunt) {
               src: [filepath],   
         });
       // copy src/js/*.js to dist/
-      var filename = filepath.replace(sysConf.src_js + '/', '');
+      var filename = filepath.replace(sysConf.js.src + '/', '');
       var isRootFile = path.dirname(filename) === '.';
       var conf;
       if( isRootFile ){
         conf = [{
           expand: true,
-          cwd: '<%= sysConf.src_js %>',
+          cwd: '<%= sysConf.js.src %>',
           src: [filename],
-          dest: '<%= sysConf.dist_js %>',
+          dest: '<%= sysConf.js.dest %>',
           ext: '.min.js',
           filter: 'isFile'              
         }];
       } else {
         var dirname = path.dirname(filename);
         conf = [{
-          src: ['<%= sysConf.src_js %>/' + dirname +'/*.js'],
-          dest: '<%= sysConf.dist_js %>/' + dirname +'.min.js',      
+          src: ['<%= sysConf.js.src %>/' + dirname +'/*.js'],
+          dest: '<%= sysConf.js.dest %>/' + dirname +'.min.js',      
         }]
       }
       grunt.config(['uglify', 'main', 'files'], conf); 
 
     // watch css
     } else if (target === 'css') {
-      var filename = filepath.replace(sysConf.src_css + '/', '');
+      var filename = filepath.replace(sysConf.css.src + '/', '');
       var isRootFile = path.dirname(filename) === '.';
       var conf;
       if( isRootFile ){
         conf = [{
           expand: true,
-          cwd: '<%= sysConf.src_css %>',
+          cwd: '<%= sysConf.css.src %>',
           src: [filename],
-          dest: '<%= sysConf.dist_css %>',
+          dest: '<%= sysConf.css.dest %>',
           ext: '.min.css',
           filter: 'isFile'      
         }];
       } else {
         var dirname = path.dirname(filename);
         conf = [{
-          src: ['<%= sysConf.src_css %>/' + dirname +'/*.css'],
-          dest: '<%= sysConf.dist_css %>/' + dirname +'.min.css',      
+          src: ['<%= sysConf.css.src %>/' + dirname +'/*.css'],
+          dest: '<%= sysConf.css.dest %>/' + dirname +'.min.css',      
         }]        
       }
 
       grunt.config(['cssmin', 'css', 'files'], conf);
  
     } else if (target === 'images') {
-      var filename = filepath.replace(sysConf.src_img + '/', '');
+      var filename = filepath.replace(sysConf.img.src + '/', '');
       var conf = [{
           expand: true,                  
-          cwd: '<%= sysConf.src_img %>',                   
+          cwd: '<%= sysConf.img.src %>',                   
           src: [filename],   
-          dest: '<%= sysConf.dist_img %>'               
+          dest: '<%= sysConf.img.dest %>'               
         }];
       grunt.config(['imagemin', 'main', 'files'], conf);
     };
