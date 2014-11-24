@@ -29,44 +29,6 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     sysConf: sysConf,
-    // compress js
-    uglify: {
-      main: {
-        options: {
-          banner: '/*uglify*/',
-          sourceMap: true,
-          compress:{
-            sequences     : true,  // join consecutive statemets with the “comma operator”
-            properties    : true,  // optimize property access: a["foo"] → a.foo
-            dead_code     : true,  // discard unreachable code
-            drop_debugger : true,  // discard “debugger” statements
-            unsafe        : false, // some unsafe optimizations (see below)
-            conditionals  : true,  // optimize if-s and conditional expressions
-            comparisons   : true,  // optimize comparisons
-            evaluate      : true,  // evaluate constant expressions
-            booleans      : true,  // optimize boolean expressions
-            loops         : true,  // optimize loops
-            unused        : false,  // drop unused variables/functions
-            hoist_funs    : true,  // hoist function declarations
-            hoist_vars    : false, // hoist variable declarations
-            if_return     : true,  // optimize if-s followed by return/continue
-            join_vars     : true,  // join var declarations
-            cascade       : true,  // try to cascade `right` into `left` in sequences
-            side_effects  : true,  // drop side-effect-free statements
-            warnings      : true,  // warn about potentially dangerous optimizations/code
-            global_defs   : {}     // global definitions
-          }
-        },
-        files: [{
-          expand: true,
-          cwd: 'dist',
-          src: '**/*.js',
-          dest: 'dist',
-          ext: '.min.js',
-          filter: 'isFile'
-        }]
-      }
-    },
 
     // js hint
     jshint: {
@@ -81,27 +43,126 @@ module.exports = function(grunt) {
         devel: ['console'],
 
       },
-      all: {
+      main: {
         src: ['<%= sysConf.src_js %>/**/*.js']
       },
     },
 
-
-    //  concat folder 'src/css/a'::{'a1.css', 'a2.css'} ==>> 'src/output.css'
-    concat: {
-      js_main: {
-        options: {
-          separator: '\n;'
-        },
-        files: [{
+    // compress js
+    uglify: {
+      options: {
+        banner: '/*uglify*/',
+        sourceMap: true,
+        compress:{
+          sequences     : true,  // join consecutive statemets with the “comma operator”
+          properties    : true,  // optimize property access: a["foo"] → a.foo
+          dead_code     : true,  // discard unreachable code
+          drop_debugger : true,  // discard “debugger” statements
+          unsafe        : false, // some unsafe optimizations (see below)
+          conditionals  : true,  // optimize if-s and conditional expressions
+          comparisons   : true,  // optimize comparisons
+          evaluate      : true,  // evaluate constant expressions
+          booleans      : true,  // optimize boolean expressions
+          loops         : true,  // optimize loops
+          unused        : false,  // drop unused variables/functions
+          hoist_funs    : true,  // hoist function declarations
+          hoist_vars    : false, // hoist variable declarations
+          if_return     : true,  // optimize if-s followed by return/continue
+          join_vars     : true,  // join var declarations
+          cascade       : true,  // try to cascade `right` into `left` in sequences
+          side_effects  : true,  // drop side-effect-free statements
+          warnings      : true,  // warn about potentially dangerous optimizations/code
+          global_defs   : {}     // global definitions
+        }
+      },
+      main: {
+        files: (function(){
+          var arr = [{
           expand: true,
           cwd: '<%= sysConf.src_js %>',
-          src: ['*.js'],
-          dest: '<%= sysConf.dist_js %>/',
+          src: '*.js',
+          dest: '<%= sysConf.dist_js %>',
+          ext: '.min.js',
           filter: 'isFile'
-        }],
+        }];
+        var fileList = dig( sysConf.src_js );
+        _.each(fileList.dirs, function(item){
+          arr.push( {dest: '<%= sysConf.dist_js %>/' + item + '.min.js', src: ['<%= sysConf.src_js %>/' + item + '/*.js']} );
+        });
+        return arr      
+        })(),
       },
-      js_sub: {
+    },
+
+    // compile less to css
+    less: {
+      options: {
+        compress: true,
+      },
+      main: {
+        files: (function(){
+          var arr = [{
+            expand: true,
+            cwd: '<%= sysConf.src_less %>',
+            src: ['*.less'],
+            dest: '<%= sysConf.dist_css %>/',
+            ext: '.less.css',
+            filter: 'isFile'
+          }];
+          var fileList = dig( sysConf.src_less );
+          _.each(fileList.dirs, function(item){
+            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.less.min.css', src: ['<%= sysConf.src_less %>/' + item + '/*.less']} );
+          });
+          return arr
+        })(),
+      }
+    },
+
+    cssmin: {
+      main: {
+        files: (function(){
+          var arr = [{
+            expand: true,
+            cwd: '<%= sysConf.src_css %>',
+            src: ['*.css'],
+            dest: '<%= sysConf.dist_css %>',
+            ext: '.min.css',
+            filter: 'isFile'
+          }];
+          var fileList = dig( sysConf.src_less );
+          _.each(fileList.dirs, function(item){
+            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.min.css', src: ['<%= sysConf.src_css %>/' + item + '/*.css']} );
+          });
+          return arr
+        })(),
+      }
+    },
+
+    imagemin: {                          
+      options: {                       // Target options
+        optimizationLevel: 3,
+        svgoPlugins: [{ removeViewBox: false }],
+        // use: [mozjpeg()]
+      },
+      main: {                         
+        files: [{
+          expand: true,                  // Enable dynamic expansion
+          cwd: '<%= sysConf.src_img %>',                   // Src matches are relative to this path
+          src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
+          dest: '<%= sysConf.dist_img %>'                  // Destination path prefix
+        }]
+      }
+    },
+
+    // clean dist/* 
+    clean: {
+      dist: ['<%= sysConf.dist_dir %>/*']
+    },
+
+
+    //  concat folder src/css/a/{'a1.css', 'a2.css'} ==>> 'src/css/output.css'
+    concat: {
+      js: {
         options: {
           separator: '\n;'
         },
@@ -115,21 +176,8 @@ module.exports = function(grunt) {
           })(),          
       },
 
-      // css main
-      css_main: {
-        options: {
-          separator: '\n'
-        },
-        files: [{
-          expand: true,
-          cwd: '<%= sysConf.src_css %>',
-          src: ['*.css'],
-          dest: '<%= sysConf.dist_css %>/',
-          filter: 'isFile'
-        }],      
-      }, 
       // css sub
-      css_sub: {
+      css: {
         options: {
           separator: '\n'
         },
@@ -183,194 +231,135 @@ module.exports = function(grunt) {
         ],
       },
     },
-    // compile less to css
-    less: {
-      main: {
-        files: [{
-          expand: true,
-          cwd: '<%= sysConf.src_less %>',
-          src: ['*.less'],
-          dest: '<%= sysConf.dist_css %>/',
-          ext: '.less.css',
-          filter: 'isFile'
-        }]
-      },
-      sub: {
-        files: (function(){
-          var arr = [];
-          var fileList = dig( sysConf.src_less );
-          _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= sysConf.dist_css %>/' + item + '.less.css', src: ['<%= sysConf.src_less %>/' + item + '/*.less']} );
-          });
-          return arr
-        })(),
-      }
-    },
 
-    // clean dist/* 
-    clean: {
-      dist: ['dist/*']
-    },
-
-    cssmin: {
-      my_target: {
-        files: [{
-          expand: true,
-          cwd: 'dist',
-          src: ['**/*.css', '!*.min.css'],
-          dest: 'dist',
-          ext: '.min.css'
-        }]
-      }
-    },
-
-    imagemin: {                          
-      dynamic: {                         
-        options: {                       // Target options
-          optimizationLevel: 3,
-          svgoPlugins: [{ removeViewBox: false }],
-          // use: [mozjpeg()]
-        },
-        files: [{
-          expand: true,                  // Enable dynamic expansion
-          cwd: 'src/',                   // Src matches are relative to this path
-          src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
-          dest: 'dist/'                  // Destination path prefix
-        }]
-      }
-    },
-    // watch less, js
     watch: {
-
       // watch javascript
-      scripts_main: {
-        files: ['<%= sysConf.src_js %>/*.js'],
-        tasks: ['newer:concat:js_main', 'newer:uglify'],
+      scripts: {
+        files: ['<%= sysConf.src_js %>/**/*.js'],
+        tasks: ['jshint', 'uglify'],
         options: {
           spawn: false,
-          // livereload: true,
-        },
-      },
-      scripts_sub: {
-        files: ['<%= sysConf.src_js %>/**/*.js', '!<%= sysConf.src_js %>/*.js'],
-        tasks: ['newer:concat:js_sub', 'newer:uglify'],
-        options: {
-          spawn: false,
+          livereload: true,
         },
       },
       // watch css
-      css_main: {
-        files: ['<%= sysConf.src_css %>/*.css'],
-        tasks: ['newer:concat:css_main'],
+      css: {
+        files: ['<%= sysConf.src_css %>/**/*.css'],
+        tasks: ['cssmin'],
         options: {
           spawn: false,
-        },
-      },
-      css_sub: {
-        files: ['<%= sysConf.src_css %>/**/*.css', '!<%= sysConf.src_css %>/*.css'],
-        tasks: ['newer:concat:css_sub'],
-        options: {
-          spawn: false,
+          livereload: true,
         },
       },
       less: {
         files: ['<%= sysConf.src_less %>/**/*.less'],
-        tasks: ['newer:less'],
+        tasks: ['less'],
         options: {
           spawn: false,
+          livereload: true,
         },
-      },       
+      },
+      images: {
+        files: ['<%= sysConf.src_img %>/**/*'],
+        tasks: ['imagemin'],
+        options: {
+          spawn: false,
+          livereload: true,
+        },
+      }       
     },  
   });
 
-  // grunt.event.on('watch', function(action, filepath, target) {
-  //   grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
+  grunt.event.on('watch', function(action, filepath, target) {
+    grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
 
-  //   /* watch less */
-  //   if(target === 'less'){
-  //     // {{sysConf.src_less}}/a/footer.css ==>> a/footer.css
-  //     // filename = filepath.replace(sysConf.src_less + '/', '');
-  //     // var isRootFile = path.dirname(filename) === '.';
-  //     // if( isRootFile ) {
-  //     //   grunt.config.set('watch.less.tasks', 'less:main');
-  //     //   grunt.config(['less', 'main', 'files'], [{
-  //     //           expand: true,
-  //     //           cwd: '<%= sysConf.src_less %>',
-  //     //           src: [filename],
-  //     //           dest: '<%= sysConf.dist_css %>',
-  //     //           ext: '.less.css',
-  //     //           filter: 'isFile'
-  //     //     }]);
+    /* watch less */
+    if(target === 'less'){
+      // {{sysConf.src_less}}/a/footer.css ==>> a/footer.css
+      var filename = filepath.replace(sysConf.src_less + '/', '');
+      var isRootFile = path.dirname(filename) === '.';
+      var conf;
+      if( isRootFile ) {
+        conf = [{
+                expand: true,
+                cwd: '<%= sysConf.src_less %>',
+                src: [filename],
+                dest: '<%= sysConf.dist_css %>',
+                ext: '.less.min.css',
+                filter: 'isFile'
+          }];
+      } else {
+        var dirname = path.dirname(filename);
+        conf = [{
+                  src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
+                  dest: '<%= sysConf.dist_css %>/' + dirname + '.less.min.css',
+            }];
+      }
 
-  //     // } else {
-  //     //   grunt.config.set('watch.less.tasks', 'less:sub');
-  //     //   var dirname = path.dirname(filename);
-  //     //   grunt.config(['less', 'sub', 'files'], [{
-  //     //             src: '<%= sysConf.src_less %>/' + dirname + '/*.less',
-  //     //             dest: '<%= sysConf.dist_css %>/' + dirname + '.less.css',
-  //     //       }]);
-  //     // }
+      grunt.config(['less', 'main', 'files'], conf);
+    /* watch javascripts */    
+    } else if(target === 'scripts'){
+      // jshint
+      grunt.config(['jshint', 'main'], {
+              src: [filepath],   
+        });
+      // copy src/js/*.js to dist/
+      var filename = filepath.replace(sysConf.src_js + '/', '');
+      var isRootFile = path.dirname(filename) === '.';
+      var conf;
+      if( isRootFile ){
+        conf = [{
+          expand: true,
+          cwd: '<%= sysConf.src_js %>',
+          src: [filename],
+          dest: '<%= sysConf.dist_js %>',
+          ext: '.min.js',
+          filter: 'isFile'              
+        }];
+      } else {
+        var dirname = path.dirname(filename);
+        conf = [{
+          src: ['<%= sysConf.src_js %>/' + dirname +'/*.js'],
+          dest: '<%= sysConf.dist_js %>/' + dirname +'.min.js',      
+        }]
+      }
+      grunt.config(['uglify', 'main', 'files'], conf); 
 
-  //   /* watch javascripts */    
-  //   } else if (target === 'scripts') {
-  //     // jshint
-  //     grunt.config(['jshint', 'all'], {
-  //             src: [filepath],   
-  //       });
-  //     // copy src/js/*.js to dist/
-  //     filename = filepath.replace(sysConf.src_js + '/', '');
-  //     var isRootFile = path.dirname(filename) === '.';
-  //     if( isRootFile ){
-  //       // do copy
-  //       grunt.config(['copy', 'js', 'files'], [{
-  //               expand: true,
-  //               cwd: '<%= sysConf.src_js %>',
-  //               src: [filename],
-  //               dest: '<%= sysConf.dist_js %>',
-  //               filter: 'isFile'      
-  //         }]);
-  //       // don't concat
-  //       grunt.config(['concat', 'js', 'files'],[{}]);
+    // watch css
+    } else if (target === 'css') {
+      var filename = filepath.replace(sysConf.src_css + '/', '');
+      var isRootFile = path.dirname(filename) === '.';
+      var conf;
+      if( isRootFile ){
+        conf = [{
+          expand: true,
+          cwd: '<%= sysConf.src_css %>',
+          src: [filename],
+          dest: '<%= sysConf.dist_css %>',
+          ext: '.min.css',
+          filter: 'isFile'      
+        }];
+      } else {
+        var dirname = path.dirname(filename);
+        conf = [{
+          src: ['<%= sysConf.src_css %>/' + dirname +'/*.css'],
+          dest: '<%= sysConf.dist_css %>/' + dirname +'.min.css',      
+        }]        
+      }
 
-  //     } else {
-  //       // don't copy
-  //       grunt.config(['copy', 'js', 'files'], [{}]);
-  //       // do concat
-  //       dirname = path.dirname(filename);
-  //       grunt.config(['concat', 'js', 'files'],[{
-  //               src: ['<%= sysConf.src_js %>/' + dirname +'/*.js'],
-  //               dest: '<%= sysConf.dist_js %>/' + dirname +'.js',         
-  //       }]);
-  //     }
-
-  //   // watch css
-  //   } else if (target === 'css') {
-  //     filename = filepath.replace(sysConf.src_css + '/', '');
-  //     var isRootFile = path.dirname(filename) === '.';
-  //     if( isRootFile ){
-  //       // do copy
-  //       grunt.config(['copy', 'css', 'files'], [{
-  //               expand: true,
-  //               cwd: '<%= sysConf.src_css %>',
-  //               src: [filename],
-  //               dest: '<%= sysConf.dist_css %>',
-  //               filter: 'isFile'      
-  //         }]);
-  //       // don't concat
-  //       grunt.config(['concat', 'css', 'files'],[{}]);
-
-  //     } else {
-  //       // don't copy
-  //       grunt.config(['copy', 'css', 'files'], [{}]);
-  //       // do concat
-  //       dirname = path.dirname(filename);
-  //       grunt.config(['concat', 'css', 'files'],[{
-  //               src: ['<%= sysConf.src_css %>/' + dirname +'/*.css'],
-  //               dest: '<%= sysConf.dist_css %>/' + dirname +'.css',         
-  //       }]);
-  //     }   
-  //   };
-  // });
+      grunt.config(['cssmin', 'css', 'files'], conf);
+ 
+    } else if (target === 'images') {
+      var filename = filepath.replace(sysConf.src_img + '/', '');
+      var conf = [{
+          expand: true,                  
+          cwd: '<%= sysConf.src_img %>',                   
+          src: [filename],   
+          dest: '<%= sysConf.dist_img %>'               
+        }];
+      grunt.config(['imagemin', 'main', 'files'], conf);
+    };
+  });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -381,12 +370,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-imagemin');
-  grunt.loadNpmTasks('grunt-newer');
 
   // Default task(s).
   grunt.registerTask('default', ['concat']);
   grunt.registerTask('run', ['clean', 'copy', 'concat', 'less', 'uglify']);
   grunt.registerTask('dev', ['clean', 'less', 'uglify', 'watch']);
-  grunt.registerTask('nless', ['new:less']);
+
 
 };

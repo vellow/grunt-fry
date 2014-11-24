@@ -1,4 +1,4 @@
-
+var a = 34
 ;(function($){
 
 	var textSelect = function(obj,start,end){

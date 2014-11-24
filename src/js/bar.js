@@ -1,3 +1,4 @@
+
 ;(function(){
   'use strict';
 
@@ -11,4 +12,10 @@
       console.log('hi');
   }
 
+sayHi();
+bar();
 }());
+f();
+function f(){
+  console.log('ffff534434');
+}
