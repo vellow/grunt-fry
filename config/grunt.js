@@ -1,7 +1,7 @@
-var grunt = require('grunt');
-
 module.exports = {
   run: function(grunt) {
-    grunt.loadNpmTasks('fry')
+    grunt.loadTasks('engine/tasks');
+    grunt.loadNpmTasks('grunt-fry');
+    grunt.task.run('configure');
   }
 };

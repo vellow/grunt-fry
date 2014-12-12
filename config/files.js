@@ -1,22 +1,21 @@
 module.exports = {
     root: {
-        src: 'app/src',
         dest: 'app/dist'
     },
     js: {
-        src: 'app/src/js',
+        src: 'app/js',
         dest: 'app/dist/js'
     },
     css: {
-        src: 'app/src/css',
+        src: 'app/css',
         dest: 'app/dist/css'
     },
     less: {
-        src: 'app/src/less',
+        src: 'app/css',
         dest: 'app/dist/css'
     },
     img: {
-        src: 'app/src/img',
+        src: 'app/img',
         dest: 'app/dist/img'
     }
 }
