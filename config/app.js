@@ -75,18 +75,32 @@ module.exports = (function(_, grunt) {
           filter: 'isFile'
         }];
         var fileList = dig( files.js.src );
-        _.each(fileList.dirs, function(item){
+        _.each(fileList.edirs, function(item){
           arr.push( {dest: '<%= files.js.dest %>/' + item + '.min.js', src: ['<%= files.js.src %>/' + item + '/*.js']} );
         });
+        // sub source directory
+        _.each(files.js.sub, function(item){
+          arr.push({
+            expand: true,
+            cwd: '<%= files.js.src %>/' + item,
+            src: '*.js',
+            dest: '<%= files.js.dest %>/' + item,
+            ext: '.min.js',
+            filter: 'isFile'
+          })
+        });
+
         return arr      
         })(),
       },
+
     },
 
     // compile less to css
     less: {
       options: {
-        compress: true,
+        compress: false,
+        syncImport: false
       },
       main: {
         files: (function(){
@@ -95,16 +109,23 @@ module.exports = (function(_, grunt) {
             cwd: '<%= files.less.src %>',
             src: ['*.less'],
             dest: '<%= files.less.dest %>/',
-            ext: '.less.css',
+            ext: '.less.min.css',
             filter: 'isFile'
           }];
-          var fileList = dig( files.less.src );
-          _.each(fileList.dirs, function(item){
-            arr.push( {dest: '<%= files.css.dest %>/' + item + '.less.min.css', src: ['<%= files.less.src %>/' + item + '/*.less']} );
+          var fileList = files.less.sub ;
+          _.each(fileList, function(item){
+            arr.push({
+              expand: true,
+              cwd: '<%= files.less.src %>/' + item,
+              src: ['*.less'],
+              dest: '<%= files.less.dest %>/' + item,
+              ext: '.less.min.css',
+              filter: 'isFile'
+            });
           });
           return arr
         })(),
-      }
+      },
     },
 
     cssmin: {
@@ -127,21 +148,6 @@ module.exports = (function(_, grunt) {
       }
     },
 
-    // imagemin: {                          
-    //   options: {                       // Target options
-    //     optimizationLevel: 3,
-    //     svgoPlugins: [{ removeViewBox: false }],
-    //     // use: [mozjpeg()]
-    //   },
-    //   main: {                         
-    //     files: [{
-    //       expand: true,                  // Enable dynamic expansion
-    //       cwd: '<%= files.img.src %>',                   // Src matches are relative to this path
-    //       src: ['**/*.{png,jpg,gif}'],   // Actual patterns to match
-    //       dest: '<%= files.img.dest %>'                  // Destination path prefix
-    //     }]
-    //   }
-    // },
 
     // clean dist/* 
     clean: {
