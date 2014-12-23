@@ -9,6 +9,7 @@ module.exports = function(grunt) {
              "grunt-contrib-less",
              "grunt-contrib-uglify",
              "grunt-contrib-watch",
+             "grunt-contrib-copy",
              "grunt-contrib-cssmin"
   ];
   grunt.util._(npmTasks).each(function(module) {
