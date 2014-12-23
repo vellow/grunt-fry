@@ -9,12 +9,22 @@
 
 
 ### Command
+  
+  ` fry < option > `
+
+##### supported options: 
 
   ` new < project_name > `  Start a new project
 
   ` build `                 Compile & compress source code to dist directory
 
+  ` clean `                 clean dist directory
+
   ` watch `                 Watch source file, compile & compress changed file to dist directory in real time
+
+  ` help `                  help info
+
+  ` jshint `, ` concat `, ` copy `, ` cssmin `, ` less `, ` uglify `
 
 
 ### Structure Rule
@@ -33,18 +43,21 @@
       | ---- global/*                              |
       | ---- global.less                           | ---- global.less.min.css        
 
-      | ---- partial                               |
-              | ---- /*.less                       | ---- *.less.min.css
+      | ---- sub                                   |
+              | ---- *.less                       | ---- *.less.min.css
               | ---- detail/*                      | 
-              | ---- detail.less                   | ---- partial/detail.less.min.css
+              | ---- detail.less                   | ---- sub/detail.less.min.css
               | ---- list/*                        | 
-              | ---- list.less                     | ---- partial/list.less.min.css
+              | ---- list.less                     | ---- sub/list.less.min.css
 
  
-    -- js
+    -- js ( css )
       | ---- *.js                                  | ---- *.min.js
       | ---- global/*.js                           | ---- global.min.js
-      | ---- global/plugin/*.js                    | ---- global/plugin.min.js
+
+      | ---- sub               
+              | ---- *.js                          | ---- sub/*.min.js
+              | ---- detail/*.js                   | ---- sub/detail.min.js
       
       
 ### Configuration

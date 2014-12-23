@@ -140,8 +140,20 @@ module.exports = (function(_, grunt) {
             filter: 'isFile'
           }];
           var fileList = dig( files.css.src );
-          _.each(fileList.dirs, function(item){
+          _.each(fileList.edirs, function(item){
             arr.push( {dest: '<%= files.css.dest %>/' + item + '.min.css', src: ['<%= files.css.src %>/' + item + '/*.css']} );
+          });
+
+          // sub source directory
+          _.each(files.css.sub, function(item){
+            arr.push({
+              expand: true,
+              cwd: '<%= files.css.src %>/' + item,
+              src: '*.css',
+              dest: '<%= files.css.dest %>/' + item,
+              ext: '.min.css',
+              filter: 'isFile'
+            })
           });
           return arr
         })(),
@@ -152,7 +164,7 @@ module.exports = (function(_, grunt) {
     // clean dist/* 
     clean: {
       dist: {
-        src: '<%= files.root.dest %>'
+        src: '<%= files.root.dest %>/*'
       },
     },
 
@@ -166,11 +178,11 @@ module.exports = (function(_, grunt) {
         files: (function(){
           var arr = [];
           var fileList = dig( files.js.src );
-          _.each(fileList.dirs, function(item){
+          _.each(fileList.edirs, function(item){
             arr.push( {dest: '<%= files.js.dest %>/' + item + '.js', src: ['<%= files.js.src %>/' + item + '/*.js']} );
           });
           return arr
-          })(),          
+        })(),          
       },
 
       // css sub
@@ -181,7 +193,7 @@ module.exports = (function(_, grunt) {
         files: (function(){
           var arr = [];
           var fileList = dig( files.css.src );
-          _.each(fileList.dirs, function(item){
+          _.each(fileList.edirs, function(item){
             arr.push( {dest: '<%= files.css.dest %>/' + item + '.css', src: ['<%= files.css.src %>/' + item + '/*.css']} );
           });
           return arr
@@ -189,24 +201,74 @@ module.exports = (function(_, grunt) {
       },      
     },
 
+    //  copy folder src/{js, css}/* ==>> dist/{js, css}/*
+    copy: {
+      css: {
+        files: (function(){
+          var arr = [{
+            expand: true,
+            cwd: '<%= files.css.src %>',
+            src: ['*.css'],
+            dest: '<%= files.css.dest %>/',
+            filter: 'isFile'
+          }];
+          var fileList = files.css.sub ;
+          _.each(fileList, function(item){
+            arr.push({
+              expand: true,
+              cwd: '<%= files.css.src %>/' + item,
+              src: ['*.css'],
+              dest: '<%= files.css.dest %>/' + item,
+              filter: 'isFile'
+            });
+          });
+          return arr
+        })(),          
+      },
+
+      js: {
+        files: (function(){
+          var arr = [{
+            expand: true,
+            cwd: '<%= files.js.src %>',
+            src: ['*.js'],
+            dest: '<%= files.js.dest %>/',
+            filter: 'isFile'
+          }];
+          var fileList = files.js.sub ;
+          _.each(fileList, function(item){
+            arr.push({
+              expand: true,
+              cwd: '<%= files.js.src %>/' + item,
+              src: ['*.js'],
+              dest: '<%= files.js.dest %>/' + item,
+              filter: 'isFile'
+            });
+          });
+          return arr
+        })(),          
+      },
+    
+    },
+
+
     watch: {
       // watch javascript
       scripts: {
         files: ['<%= files.js.src %>/**/*.js'],
-        tasks: ['uglify'],
+        tasks: ['jshint', 'uglify'],
         options: {
           spawn: false
         },
       },
       // watch css
-      // css: {
-      //   files: ['<%= files.css.src %>/**/*.css'],
-      //   tasks: ['cssmin'],
-      //   options: {
-      //     spawn: false,
-      //     livereload: true,
-      //   },
-      // },
+      css: {
+        files: ['<%= files.css.src %>/**/*.css'],
+        tasks: ['cssmin'],
+        options: {
+          spawn: false
+        },
+      },
       less: {
         files: ['<%= files.less.src %>/**/*.less'],
         tasks: ['less'],

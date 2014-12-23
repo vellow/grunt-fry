@@ -7,7 +7,7 @@ module.exports = function() {
     return function(action, filepath, target) {
         grunt.log.writeln(target + ': ' + filepath + ' has ' + action);
 
-        /* watch less, compile to css*/
+        /* watch less, excute [less]*/
         if (target === 'less') {
             // @filepath      {{files.less.src}}/sub1/common/footer.css
             // @reFilepath    sub1/common/footer.css
@@ -75,6 +75,8 @@ module.exports = function() {
 
             grunt.config(['less', 'main', 'files'], conf);
             /* watch javascripts */
+        
+        // watch js, excute [jshint,uglify]
         } else if (target === 'scripts') {
             // jshint
             grunt.config(['jshint', 'main'], {
@@ -117,7 +119,47 @@ module.exports = function() {
             }
             grunt.config(['uglify', 'main', 'files'], conf);
 
-            // watch css
+        // watch css, excute cssmin
+        } else if (target === 'css') {
+            // @filepath      {{files.css.src}}/sub1/common/footer.css
+            // @reFilepath    sub1/common/footer.css
+            // @reDirname     sub1/common
+            // @filename      footer.css
+            var reFilepath = filepath.replace(files.css.src + '/', '');
+            var reDirname = path.dirname(reFilepath);
+            var filename = path.basename(filepath);
+            var conf;
+            // changed file in {{files.css.src}}/*
+
+            if (reDirname === '.') {
+                conf = [{
+                    expand: true,
+                    cwd: '<%= files.css.src %>',
+                    src: reFilepath,
+                    dest: '<%= files.css.dest %>',
+                    ext: '.min.css',
+                    filter: 'isFile'
+                }];
+                // changed file in {{files.css.src}}/{{sub}}/*
+            } else if (files.css.sub.indexOf(reDirname) !== -1) {
+                conf = [{
+                    expand: true,
+                    cwd: '<%= files.css.src %>/' + reDirname,
+                    src: filename,
+                    dest: '<%= files.css.dest %>/' + reDirname,
+                    ext: '.min.css',
+                    filter: 'isFile'
+                }];
+                // changed file in {{files.css.src}} / { {{sub}}/**/*, /**/* }
+            } else {
+                conf = [{
+                    src: '<%= files.css.src %>/' + reDirname + '/*.css',
+                    dest: '<%= files.css.dest %>/' + reDirname + '.min.css'
+                }]
+            }
+
+            grunt.config(['cssmin', 'main', 'files'], conf);
+
         };
     };
 };
