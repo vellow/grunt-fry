@@ -1,10 +1,9 @@
 {
   "name": "grunt-fry",
-  "version": "0.0.7",
-  "description": "front-end engine",
+  "version": "0.0.8",
+  "description": "A javascript task runner, build on grunt, make everthing just work as expected",
   "main": "./fry.js",
   "scripts": {
-    "test": "test-cmd",
     "start": "fry"
   },
   "bin": {

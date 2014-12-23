@@ -1,6 +1,6 @@
 /**
- * 自定义文件路径
- * @deep 文件合并深度
+ * 自定义编译路径
+ * @sub 子板块，根目录下文件不被合并
  */
 module.exports = {
         root: {
@@ -9,17 +9,17 @@ module.exports = {
         js: {
             src: 'app/js',
             dest: 'app/dist/js',
-            sub: ['tpubbs']
+            sub: []
         },
         css: {
             src: 'app/css',
             dest: 'app/dist/css',
-            sub: ['tpubbs']
+            sub: []
         },
         less: {
             src: 'app/css',
             dest: 'app/dist/css',
-            sub: ['tpubbs']
+            sub: []
         },
         img: {
             src: 'app/img',
