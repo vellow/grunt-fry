@@ -1,6 +1,6 @@
 {
   "name": "grunt-fry",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "front-end engine",
   "main": "./fry.js",
   "scripts": {
