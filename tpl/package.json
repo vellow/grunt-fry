@@ -1,0 +1,10 @@
+{
+  "name": "<%= name %>",
+  "description" : "Fry",
+  "version": "0.0.1",
+  "private": true,
+  "author": "FE (BP&IT)",
+  "dependencies": {
+    "fry": "<%= versions.fry %>"
+  }
+}

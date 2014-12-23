@@ -1,0 +1,17 @@
+
+.modal-layout (@width,@height) {
+  .modal {
+    width: @width;
+    height: @height;
+    .shadow {
+      height: @height - 20;
+    }
+    .wrapper {
+      width: @width - 19;
+      height: @height - 20;
+    }
+    .modal-footer {
+      width: @width - 20;
+    }
+  }
+}
