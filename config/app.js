@@ -1,20 +1,20 @@
 /*
- * copy :: src/js/*.js ==> dist/js/  && css
- * concat :: 'src/js/a/{'a1.js', 'a2.js'} ==>> 'dist/js/a.js'  && css
- * cssmin  css
- * uglify  js
+ * app config
  * 
  */
 
 var grunt = require('grunt'),
     _ = grunt.util._,
-    path = require('path'),
     dig = require('../lib/digger.js'),
+    extend = require('../lib/cloneextend.js'),
     files = require('./files.js');
 
 module.exports = (function(_, grunt) {
   // Project configuration.
-  return {
+  // 
+  var outerApp = require(process.cwd() + "/engine/config/app");
+
+  var innerApp = {
     pkg: grunt.file.readJSON('package.json'),
 
     files: files,
@@ -279,4 +279,7 @@ module.exports = (function(_, grunt) {
     },  
   };
 
+  var allApp = extend.extend(innerApp, outerApp);
+
+  return allApp;
 }(_, grunt));

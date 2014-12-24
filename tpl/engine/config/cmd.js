@@ -3,7 +3,5 @@
  */
 
 module.exports = {
-    common: ['concat'],
     dev: ['watch'],
-    copy: ['copy']
   }

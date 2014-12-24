@@ -18,11 +18,11 @@
 
   ` build `                 Compile & compress source code to dist directory
 
-  ` clean `                 clean dist directory
+  ` clean `                 Clean dist directory
 
   ` watch `                 Watch source file, compile & compress changed file to dist directory in real time
 
-  ` help `                  help info
+  ` help `                  Help info
 
   ` jshint `, ` concat `, ` copy `, ` cssmin `, ` less `, ` uglify `
 
@@ -73,5 +73,22 @@
   ` engine/tasks/* `            Write your grunt tasks
 
 
+### Extend Fry
+
+Grunt-fry support install external grunt plugin, It makes grunt-fry pretty flexible.
+
+Extend Fry with  ` grunt-contrib-imagemin ` example: 
+
+1. Install plugin in project_folder, ` npm install grunt-contrib-imagemin `
+
+2. Add imagemin-rule to ` engine/config/app `
+
+3. Add image folder to ` engine/config/files `
+
+4. Registe ' grunt-contrib-imagemin ' to ` engine/config/npmtasks `
 
 
+Done, the new command ` fry imagemin ` was created.
+
+
+[https://github.com/vellow/grunt-fry](https://github.com/vellow/grunt-fry)
