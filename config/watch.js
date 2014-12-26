@@ -114,7 +114,7 @@ module.exports = function() {
             } else {
                 conf = [{
                     src: path.join('<%= files.js.src %>', reDirname, '*.js'),
-                    dest: path.join('<%= files.js.dest %>', reDirname, '.min.js')
+                    dest: path.join('<%= files.js.dest %>', reDirname + '.min.js')
                 }]
             }
             grunt.config(['uglify', 'main', 'files'], conf);
@@ -154,7 +154,7 @@ module.exports = function() {
             } else {
                 conf = [{
                     src: path.join('<%= files.css.src %>', reDirname, '*.css'),
-                    dest: path.join('<%= files.css.dest %>', reDirname, '.min.css')
+                    dest: path.join('<%= files.css.dest %>', reDirname + '.min.css')
                 }]
             }
 

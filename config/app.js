@@ -100,7 +100,7 @@ module.exports = (function(_, grunt) {
     // compile less to css
     less: {
       options: {
-        compress: false,
+        compress: true,
         syncImport: false
       },
       main: {
