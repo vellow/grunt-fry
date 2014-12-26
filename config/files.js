@@ -1,4 +1,6 @@
+
 module.exports = (function() {
+  var path = require('path');
   var extend = require('../lib/cloneextend');
   var outerFiles = require(process.cwd() + "/engine/config/files");
   var innerFiles = {
