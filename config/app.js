@@ -7,12 +7,13 @@ var grunt = require('grunt'),
     _ = grunt.util._,
     dig = require('../lib/digger.js'),
     extend = require('../lib/cloneextend.js'),
+    path = require('path'),
     files = require('./files.js');
 
 module.exports = (function(_, grunt) {
   // Project configuration.
   // 
-  var outerApp = require(process.cwd() + "/engine/config/app");
+  var outerApp = require( path.join(process.cwd(), 'engine', 'config', 'app') );
 
   var innerApp = {
     pkg: grunt.file.readJSON('package.json'),
@@ -76,15 +77,15 @@ module.exports = (function(_, grunt) {
         }];
         var fileList = dig( files.js.src );
         _.each(fileList.edirs, function(item){
-          arr.push( {dest: '<%= files.js.dest %>/' + item + '.min.js', src: ['<%= files.js.src %>/' + item + '/*.js']} );
+          arr.push( {dest: path.join('<%= files.js.dest %>', item + '.min.js'), src: [ path.join('<%= files.js.src %>/', item, '*.js') ]} );
         });
         // sub source directory
         _.each(files.js.sub, function(item){
           arr.push({
             expand: true,
-            cwd: '<%= files.js.src %>/' + item,
+            cwd: path.join('<%= files.js.src %>', item),
             src: '*.js',
-            dest: '<%= files.js.dest %>/' + item,
+            dest: path.join('<%= files.js.dest %>', item),
             ext: '.min.js',
             filter: 'isFile'
           })
@@ -108,7 +109,7 @@ module.exports = (function(_, grunt) {
             expand: true,
             cwd: '<%= files.less.src %>',
             src: ['*.less'],
-            dest: '<%= files.less.dest %>/',
+            dest: '<%= files.less.dest %>',
             ext: '.less.min.css',
             filter: 'isFile'
           }];
@@ -116,9 +117,9 @@ module.exports = (function(_, grunt) {
           _.each(fileList, function(item){
             arr.push({
               expand: true,
-              cwd: '<%= files.less.src %>/' + item,
+              cwd: path.join('<%= files.less.src %>', item),
               src: ['*.less'],
-              dest: '<%= files.less.dest %>/' + item,
+              dest: path.join('<%= files.less.dest %>', item),
               ext: '.less.min.css',
               filter: 'isFile'
             });
@@ -141,16 +142,16 @@ module.exports = (function(_, grunt) {
           }];
           var fileList = dig( files.css.src );
           _.each(fileList.edirs, function(item){
-            arr.push( {dest: '<%= files.css.dest %>/' + item + '.min.css', src: ['<%= files.css.src %>/' + item + '/*.css']} );
+            arr.push( {dest: path.join('<%= files.css.dest %>', item + '.min.css'), src: [path.join('<%= files.css.src %>', item, '*.css')]} );
           });
 
           // sub source directory
           _.each(files.css.sub, function(item){
             arr.push({
               expand: true,
-              cwd: '<%= files.css.src %>/' + item,
+              cwd: path.join('<%= files.css.src %>', item),
               src: '*.css',
-              dest: '<%= files.css.dest %>/' + item,
+              dest: path.join('<%= files.css.dest %>', item),
               ext: '.min.css',
               filter: 'isFile'
             })
@@ -179,7 +180,7 @@ module.exports = (function(_, grunt) {
           var arr = [];
           var fileList = dig( files.js.src );
           _.each(fileList.edirs, function(item){
-            arr.push( {dest: '<%= files.js.dest %>/' + item + '.js', src: ['<%= files.js.src %>/' + item + '/*.js']} );
+            arr.push( {dest: path.join('<%= files.js.dest %>', item + '.js'), src: [path.join('<%= files.js.src %>', item, '*.js')]} );
           });
           return arr
         })(),          
@@ -194,7 +195,7 @@ module.exports = (function(_, grunt) {
           var arr = [];
           var fileList = dig( files.css.src );
           _.each(fileList.edirs, function(item){
-            arr.push( {dest: '<%= files.css.dest %>/' + item + '.css', src: ['<%= files.css.src %>/' + item + '/*.css']} );
+            arr.push( {dest: path.join('<%= files.css.dest %>', item + '.css'), src: [path.join('<%= files.css.src %>', item, '*.css')]} );
           });
           return arr
         })(),      
@@ -209,16 +210,16 @@ module.exports = (function(_, grunt) {
             expand: true,
             cwd: '<%= files.css.src %>',
             src: ['*.css'],
-            dest: '<%= files.css.dest %>/',
+            dest: '<%= files.css.dest %>',
             filter: 'isFile'
           }];
           var fileList = files.css.sub ;
           _.each(fileList, function(item){
             arr.push({
               expand: true,
-              cwd: '<%= files.css.src %>/' + item,
+              cwd: path.join('<%= files.css.src %>', item),
               src: ['*.css'],
-              dest: '<%= files.css.dest %>/' + item,
+              dest: path.join('<%= files.css.dest %>', item),
               filter: 'isFile'
             });
           });
@@ -232,16 +233,16 @@ module.exports = (function(_, grunt) {
             expand: true,
             cwd: '<%= files.js.src %>',
             src: ['*.js'],
-            dest: '<%= files.js.dest %>/',
+            dest: '<%= files.js.dest %>',
             filter: 'isFile'
           }];
           var fileList = files.js.sub ;
           _.each(fileList, function(item){
             arr.push({
               expand: true,
-              cwd: '<%= files.js.src %>/' + item,
+              cwd: path.join('<%= files.js.src %>', item),
               src: ['*.js'],
-              dest: '<%= files.js.dest %>/' + item,
+              dest: path.join('<%= files.js.dest %>', item),
               filter: 'isFile'
             });
           });

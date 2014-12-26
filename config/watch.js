@@ -13,7 +13,7 @@ module.exports = function() {
             // @reFilepath    sub1/common/footer.css
             // @reDirname     sub1/common
             // @filename      footer.css
-            var reFilepath = filepath.replace(files.less.src + '/', '');
+            var reFilepath = filepath.replace(files.less.src + path.sep, '');
             var reDirname = path.dirname(reFilepath);
             var filename = path.basename(filepath);
             var conf;
@@ -32,9 +32,9 @@ module.exports = function() {
             } else if (files.less.sub.indexOf(reDirname) !== -1) {
                 conf = [{
                     expand: true,
-                    cwd: '<%= files.less.src %>/' + reDirname,
+                    cwd: path.join('<%= files.less.src %>', reDirname),
                     src: filename,
-                    dest: '<%= files.css.dest %>/' + reDirname,
+                    dest: path.join('<%= files.css.dest %>', reDirname),
                     ext: '.less.min.css',
                     filter: 'isFile'
                 }];
@@ -49,19 +49,19 @@ module.exports = function() {
                 // changed file in {{files.less.src}}/{{sub}}/**/*
                 // @ rereDirname = 'common', {{sub}}/rereDirname/**/*
                 if (subName) {
-                    rereDirname = reDirname.split('/')[1];
+                    rereDirname = reDirname.split(path.sep)[1];
                     conf = [{
                         expand: true,
-                        cwd: '<%= files.less.src %>/' + subName,
+                        cwd: path.join('<%= files.less.src %>', subName),
                         src: rereDirname + '.less',
-                        dest: '<%= files.css.dest %>/' + subName,
+                        dest: path.join('<%= files.css.dest %>', subName),
                         ext: '.less.min.css',
                         filter: 'isFile'
                     }];
                     // changed file in {{files.less.src}}/**/*
                     // @rereDirname, {{files.less.src}}/rereDirname/**/*
                 } else {
-                    rereDirname = reDirname.split('/')[0];
+                    rereDirname = reDirname.split(path.sep)[0];
                     conf = [{
                         expand: true,
                         cwd: '<%= files.less.src %>',
@@ -86,7 +86,7 @@ module.exports = function() {
             // @reFilepath    partial/common/footer.js
             // @reDirname     partial/common
             // @filename      footer.js
-            var reFilepath = filepath.replace(files.js.src + '/', '');
+            var reFilepath = filepath.replace(files.js.src + path.sep, '');
             var reDirname = path.dirname(reFilepath);
             var filename = path.basename(filepath);
             var conf;
@@ -104,17 +104,17 @@ module.exports = function() {
             } else if (files.js.sub.indexOf(reDirname) !== -1) {
                 conf = [{
                     expand: true,
-                    cwd: '<%= files.js.src %>/' + reDirname,
+                    cwd: path.join('<%= files.js.src %>', reDirname),
                     src: filename,
-                    dest: '<%= files.js.dest %>/' + reDirname,
+                    dest: path.join('<%= files.js.dest %>', reDirname),
                     ext: '.min.js',
                     filter: 'isFile'
                 }];
                 // changed file in {{files.js.src}}/**/reDirname/*.js
             } else {
                 conf = [{
-                    src: '<%= files.js.src %>/' + reDirname + '/*.js',
-                    dest: '<%= files.js.dest %>/' + reDirname + '.min.js'
+                    src: path.join('<%= files.js.src %>', reDirname, '*.js'),
+                    dest: path.join('<%= files.js.dest %>', reDirname, '.min.js')
                 }]
             }
             grunt.config(['uglify', 'main', 'files'], conf);
@@ -125,7 +125,7 @@ module.exports = function() {
             // @reFilepath    sub1/common/footer.css
             // @reDirname     sub1/common
             // @filename      footer.css
-            var reFilepath = filepath.replace(files.css.src + '/', '');
+            var reFilepath = filepath.replace(files.css.src + path.sep, '');
             var reDirname = path.dirname(reFilepath);
             var filename = path.basename(filepath);
             var conf;
@@ -144,17 +144,17 @@ module.exports = function() {
             } else if (files.css.sub.indexOf(reDirname) !== -1) {
                 conf = [{
                     expand: true,
-                    cwd: '<%= files.css.src %>/' + reDirname,
+                    cwd: path.join('<%= files.css.src %>', reDirname),
                     src: filename,
-                    dest: '<%= files.css.dest %>/' + reDirname,
+                    dest: path.join('<%= files.css.dest %>', reDirname),
                     ext: '.min.css',
                     filter: 'isFile'
                 }];
                 // changed file in {{files.css.src}} / { {{sub}}/**/*, /**/* }
             } else {
                 conf = [{
-                    src: '<%= files.css.src %>/' + reDirname + '/*.css',
-                    dest: '<%= files.css.dest %>/' + reDirname + '.min.css'
+                    src: path.join('<%= files.css.src %>', reDirname, '*.css'),
+                    dest: path.join('<%= files.css.dest %>', reDirname, '.min.css')
                 }]
             }
 
