@@ -1,30 +1,31 @@
-module.exports = (function(){
-    var extend = require('../lib/cloneextend');
-    var outerFiles = require(process.cwd() + "/engine/config/files");
-    var innerFiles = {
-        root: {
-            dest: 'app/dist'
-        },
-        js: {
-            src: 'app/js',
-            dest: 'app/dist/js',
-            sub: []
-        },
-        css: {
-            src: 'app/css',
-            dest: 'app/dist/css',
-            sub: []
-        },
-        less: {
-            src: 'app/css',
-            dest: 'app/dist/css',
-            sub: []
-        },
-        img: {
-            src: 'app/img',
-            dest: 'app/dist/img'
-        } 
-    };
-    var allFiles = extend.extend(innerFiles, outerFiles);
-    return allFiles
+module.exports = (function() {
+  var extend = require('../lib/cloneextend');
+  var outerFiles = require(process.cwd() + "/engine/config/files");
+  var innerFiles = {
+    root: {
+      dest: path.join('app', 'dist')
+    },
+    js: {
+      src: path.join('app', 'js'),
+      dest: path.join('app', 'dist', 'js'),
+      sub: []
+    },
+    css: {
+      src: path.join('app', 'css'),
+      dest: path.join('app', 'dist', 'css'),
+      sub: []
+    },
+    less: {
+      src: path.join('app', 'css'),
+      dest: path.join('app', 'dist', 'css'),
+      sub: []
+    },
+    img: {
+      src: path.join('app', 'img'),
+      dest: path.join('app', 'dist', 'img')
+    }
+  };
+
+  var allFiles = extend.extend(innerFiles, outerFiles);
+  return allFiles
 })();
