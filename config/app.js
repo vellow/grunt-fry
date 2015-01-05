@@ -101,7 +101,8 @@ module.exports = (function(_, grunt) {
     less: {
       options: {
         compress: true,
-        syncImport: false
+        syncImport: false,
+        sourceMap: true
       },
       main: {
         files: (function(){
