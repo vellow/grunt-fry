@@ -102,7 +102,13 @@ module.exports = (function(_, grunt) {
       options: {
         compress: true,
         syncImport: false,
-        sourceMap: true
+        sourceMap: true,
+        sourceMapRootpath: (function(){
+          for(var p='', l=files.less.dest.split(path.sep).length; l>0; l--){
+            p += '../'
+          }
+          return p
+        })()
       },
       main: {
         files: (function(){
