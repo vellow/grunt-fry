@@ -27,13 +27,8 @@ colors.setTheme({
   error: 'red'
 });
 
-
-Fry.command('new')
-  .description(' - 新建一个项目,需要参数为新项目名称')
-  .action(createProject);
-
 Fry.command('help')
-  .description(' Grunt Fry 帮助 ')
+  .description(' - 帮助 ')
   .action(function(){
     grunt.log.writeln('\n--------- Fry 参数说明 ---------\n'.info);
     grunt.log.writeln('new <项目名称>'.verbose);
@@ -44,8 +39,20 @@ Fry.command('help')
     grunt.log.writeln('实时增量编译文件\n'.yellow);
   });
 
+Fry.command('new')
+  .description(' - 新建一个项目,需要参数为新项目名称')
+  .action(createProject);
+
 Fry.command('*')
-  .description('分开执行内部定义的grunt命令')
+  .description(' - 内部定义的grunt命令 \n' +
+    'less    - 链接编译压缩less 文件\n' +
+    'uglify  - 链接压缩js 文件\n' +
+    'jshint  - 检查js 文件\n' +
+    'cssmin  - 链接压缩css 文件\n' +
+    'concat  - 链接css js 至发布目录\n' +
+    'copy    - 复制css js 至发布目录\n' +
+    'clean   - 清空发布目录\n'
+    )
   .action(function() {
     cli.tasks = grunt.util._(arguments).chain().toArray().initial().value();
     grunt.cli();

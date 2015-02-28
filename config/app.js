@@ -177,7 +177,7 @@ module.exports = (function(_, grunt) {
     },
 
 
-    //  concat folder src/css/a/{'a1.css', 'a2.css'} ==>> 'src/css/output.css'
+    //  concat js, css folder src/css/a/{'a1.css', 'a2.css'} ==>> 'src/css/output.css', and js
     concat: {
       js: {
         options: {
