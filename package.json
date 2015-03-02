@@ -1,6 +1,6 @@
 {
   "name": "grunt-fry",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "A javascript task runner, build on grunt, make everthing just work as expected",
   "main": "./fry.js",
   "scripts": {
