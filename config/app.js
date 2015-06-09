@@ -212,26 +212,13 @@ module.exports = (function(_, grunt) {
     //  copy folder src/{js, css}/* ==>> dist/{js, css}/*
     copy: {
       css: {
-        files: (function(){
-          var arr = [{
+        files: [{
             expand: true,
             cwd: '<%= files.css.src %>',
-            src: ['*.css'],
+            src: ['*'],
             dest: '<%= files.css.dest %>',
             filter: 'isFile'
-          }];
-          var fileList = files.css.sub ;
-          _.each(fileList, function(item){
-            arr.push({
-              expand: true,
-              cwd: path.join('<%= files.css.src %>', item),
-              src: ['*.css'],
-              dest: path.join('<%= files.css.dest %>', item),
-              filter: 'isFile'
-            });
-          });
-          return arr
-        })(),          
+          }]
       },
 
       js: {
